@@ -1,6 +1,12 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
+
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+    <main className="">
+      <Avatar>
+        <AvatarImage src="https://github.com/shadcn.png" />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
       Hello world
     </main>
   );
