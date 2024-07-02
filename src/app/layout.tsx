@@ -1,12 +1,15 @@
 import { RootNavbar } from "@/components/Navbar";
 import { Input } from "@/components/ui/Input";
 import "@/styles/globals.css";
-
 import { GeistSans } from "geist/font/sans";
 import { Search } from "lucide-react";
 import MobileSheet from "@/components/MobileSheet";
-import UserDropdown from "@/components/UserDropdown";
 import BreadcrumbComponent from "@/components/BreadcrumbComponent";
+import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/Button";
+import Link from "next/link";
+
+import UserDropdown from "@/components/UserDropdown";
 
 export const metadata = {
   title: "Arcana | Keep Learning",
@@ -14,33 +17,42 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <div className="bg-muted/40 flex min-h-screen w-full flex-col">
+        <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <RootNavbar />
           <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-            <header className="bg-background sticky top-0 z-30 flex h-14 items-center gap-4 border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+            <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
               <MobileSheet />
               <BreadcrumbComponent />
               <div className="relative ml-auto flex-1 md:grow-0">
-                <Search className="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search..."
-                  className="bg-background w-full rounded-lg pl-8 md:w-[200px] lg:w-[336px]"
+                  className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
                 />
               </div>
-              <UserDropdown />
+              {user !== null ? (
+                <UserDropdown user={user} />
+              ) : (
+                <Button>
+                  <Link href="/login">Sign in</Link>
+                </Button>
+              )}
             </header>
-            <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
-              {children}
-            </main>
+            <main className="grid flex-1 items-start p-4">{children}</main>
           </div>
         </div>
       </body>
