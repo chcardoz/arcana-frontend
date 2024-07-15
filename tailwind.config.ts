@@ -7,6 +7,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["var(--font-geist-sans)", ...fontFamily.sans],
+        display: ["var(--font-rhodium-libre)", ...fontFamily.serif],
       },
       colors: {
         border: "hsl(var(--border))",
