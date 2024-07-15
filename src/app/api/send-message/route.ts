@@ -31,7 +31,6 @@ const requestSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const ip = req.ip ?? "127.0.0.1";
-    console.log("IP: ", ip);
     const { success, limit, remaining, reset } = await ratelimit.limit(ip);
 
     if (!success) {
@@ -58,12 +57,10 @@ export async function POST(req: NextRequest) {
     }
 
     if (!cookiesMatch) {
-      console.log("Cokkies do not match");
       return new Response("Could not validate user", { status: 400 });
     }
 
     const content = await req.json();
-    console.log("Content from client: ", content);
     const parsedContent = requestSchema.safeParse(content);
 
     if (!parsedContent.success) {

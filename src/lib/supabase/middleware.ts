@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { type Database } from "../database.types";
+import { getUser } from "./queries";
 
 export function createClient(request: NextRequest) {
   let supabaseResponse = NextResponse.next({

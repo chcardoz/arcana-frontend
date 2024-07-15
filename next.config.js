@@ -16,7 +16,7 @@ const config = {
     return [
       {
         // matching all API routes
-        source: "/api/send-message",
+        source: "/api/:path*",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
           {
