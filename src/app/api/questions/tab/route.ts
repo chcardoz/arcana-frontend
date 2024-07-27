@@ -1,23 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
-import { cookies } from "next/headers";
 import OpenAI from "openai";
 import { createClient } from "@/lib/supabase/server";
 import {
   getLastRevisedMessageWithLink,
-  updateMessageRevisedAtById,
+  updateMsgRevisedAt,
 } from "@/lib/supabase/queries";
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
-const ratelimit = new Ratelimit({
-  redis: redis,
-  limiter: Ratelimit.slidingWindow(5, "10 s"),
-});
+import { checkCookies, checkRateLimit } from "@/lib/auth-helpers/server";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -26,33 +14,16 @@ const openai = new OpenAI({
 export async function GET(request: NextRequest) {
   try {
     const ip = request.ip ?? "127.0.0.1";
-    const { success, limit, remaining, reset } = await ratelimit.limit(ip);
-
-    if (!success) {
-      return new Response("You have reached your request limit for the day.", {
-        status: 429,
-        headers: {
-          "X-RateLimit-Limit": limit.toString(),
-          "X-RateLimit-Remaining": remaining.toString(),
-          "X-RateLimit-Reset": reset.toString(),
-        },
+    const rateLimitError = await checkRateLimit(ip);
+    if (rateLimitError) {
+      return NextResponse.json(rateLimitError, {
+        status: rateLimitError.status,
       });
     }
-    const reqCookies = request.cookies.getAll();
-    const cookieStore = cookies();
 
-    let cookiesMatch = true;
-    for (const cookie of reqCookies) {
-      const storedCookieValue = cookieStore.get(cookie.name)?.value;
-      if (cookie.value !== storedCookieValue) {
-        cookiesMatch = false;
-        break;
-      }
-    }
-
-    if (!cookiesMatch) {
-      console.log("Cookies do not match");
-      return new Response("Could not validate user", { status: 400 });
+    const cookieError = await checkCookies(request);
+    if (cookieError) {
+      return NextResponse.json(cookieError, { status: cookieError.status });
     }
 
     const supabase = createClient();
@@ -93,11 +64,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    await updateMessageRevisedAtById(supabase, messages[0].id as string);
+    await updateMsgRevisedAt(supabase, messages[0].id as string);
     return NextResponse.json(
       {
         question: choices[0].message.content,
-        url: messages[0].domain,
+        link: messages[0].domain,
       },
       { status: 200 },
     );

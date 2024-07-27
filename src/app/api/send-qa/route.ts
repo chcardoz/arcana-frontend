@@ -1,20 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
-import { cookies } from "next/headers";
 import { insertQuestionAnswer } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
-const ratelimit = new Ratelimit({
-  redis: redis,
-  limiter: Ratelimit.slidingWindow(5, "10 s"),
-});
+import { checkCookies, checkRateLimit } from "@/lib/auth-helpers/server";
 
 // Define the Zod schema
 const requestSchema = z.object({
@@ -25,32 +13,16 @@ const requestSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const ip = request.ip ?? "127.0.0.1";
-    const { success, limit, remaining, reset } = await ratelimit.limit(ip);
-
-    if (!success) {
-      return new Response("You have reached your request limit for the day.", {
-        status: 429,
-        headers: {
-          "X-RateLimit-Limit": limit.toString(),
-          "X-RateLimit-Remaining": remaining.toString(),
-          "X-RateLimit-Reset": reset.toString(),
-        },
+    const rateLimitError = await checkRateLimit(ip);
+    if (rateLimitError) {
+      return NextResponse.json(rateLimitError, {
+        status: rateLimitError.status,
       });
     }
-    const reqCookies = request.cookies.getAll();
-    const cookieStore = cookies();
 
-    let cookiesMatch = true;
-    for (const cookie of reqCookies) {
-      const storedCookieValue = cookieStore.get(cookie.name)?.value;
-      if (cookie.value !== storedCookieValue) {
-        cookiesMatch = false;
-        break;
-      }
-    }
-
-    if (!cookiesMatch) {
-      return new Response("Could not validate user", { status: 400 });
+    const cookieError = await checkCookies(request);
+    if (cookieError) {
+      return NextResponse.json(cookieError, { status: cookieError.status });
     }
 
     const content = await request.json();

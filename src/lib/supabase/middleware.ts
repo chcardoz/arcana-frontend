@@ -1,7 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { type Database } from "../database.types";
-import { getUser } from "./queries";
 
 export function createClient(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -19,7 +18,7 @@ export function createClient(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
           supabaseResponse = NextResponse.next({
@@ -62,13 +61,9 @@ export const updateSession = async (request: NextRequest) => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    return NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
+  if (user) {
+    return supabaseResponse;
   }
 
-  return supabaseResponse;
+  return NextResponse.redirect(new URL("/login", request.url), 308);
 };

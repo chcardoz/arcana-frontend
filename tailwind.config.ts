@@ -8,6 +8,7 @@ export default {
       fontFamily: {
         sans: ["var(--font-geist-sans)", ...fontFamily.sans],
         display: ["var(--font-rhodium-libre)", ...fontFamily.serif],
+        title: ["var(--font-kanit)", ...fontFamily.serif],
       },
       colors: {
         border: "hsl(var(--border))",

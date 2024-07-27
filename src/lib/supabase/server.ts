@@ -26,6 +26,7 @@ export function createClient() {
           }
         },
       },
+      cookieOptions: {},
     },
   );
 }

@@ -40,7 +40,10 @@ export default function UserDropdown(props: Props) {
           className="overflow-hidden rounded-full"
         >
           <Avatar>
-            <AvatarImage src="https://githb.com/shadcn.png" alt="@shadcn" />
+            <AvatarImage
+              src={props.user?.user_metadata.avatar_url}
+              alt="@shadcn"
+            />
             <AvatarFallback>{userInitials}</AvatarFallback>
           </Avatar>
         </Button>
@@ -53,7 +56,6 @@ export default function UserDropdown(props: Props) {
             <p>{props.user.email}</p>
           </DropdownMenuItem>
         ) : null}
-        <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>

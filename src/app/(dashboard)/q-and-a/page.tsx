@@ -7,14 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/Table";
-import { getQuestionsAndAnswers } from "@/lib/supabase/queries";
+import { getQAndA } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function QAPage() {
   const supabase = createClient();
-  const [questionAnswers] = await Promise.all([
-    getQuestionsAndAnswers(supabase),
-  ]);
+  const [questionAnswers] = await Promise.all([getQAndA(supabase)]);
 
   return (
     <Table>

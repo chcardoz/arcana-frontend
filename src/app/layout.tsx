@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { Rhodium_Libre } from "next/font/google";
+import { Kanit } from "next/font/google";
 
 export const metadata = {
   title: "Arcana | Keep Learning",
@@ -14,6 +15,12 @@ const rhodium_libre = Rhodium_Libre({
   variable: "--font-rhodium-libre",
 });
 
+const kanit = Kanit({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-kanit",
+});
+
 export default function RootLayout({
   children,
 }: {
@@ -22,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${rhodium_libre.variable}`}
+      className={`${GeistSans.variable} ${rhodium_libre.variable} ${kanit.variable}`}
     >
       <body>{children}</body>
     </html>

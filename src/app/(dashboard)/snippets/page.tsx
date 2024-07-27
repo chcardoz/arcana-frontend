@@ -10,6 +10,14 @@ import {
 import { getMessages } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { z } from "zod";
+
+const snippetSchema = z.object({
+  id: z.string(),
+  raw: z.string(),
+  origin: z.string(),
+  host: z.string(),
+});
 
 export default async function SnippetsPage() {
   const supabase = createClient();
@@ -30,8 +38,8 @@ export default async function SnippetsPage() {
           <TableRow key={idx}>
             <TableCell>{snippet.raw}</TableCell>
             <TableCell>
-              <Link href={snippet.domain} target="_blank" rel="noreferrer">
-                {snippet.domain}
+              <Link href={snippet.origin} target="_blank" rel="noreferrer">
+                {snippet.origin}
               </Link>
             </TableCell>
             <TableCell>{snippet.revised_at}</TableCell>
