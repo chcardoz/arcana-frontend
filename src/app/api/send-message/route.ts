@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     if (!data[0]?.embedding) {
       return NextResponse.json({
         error: "Internal server error. Please try again later.",
-        next: "https://localhost:3000/login",
+        next: "https://keepalive.club/login",
         status: 500,
       });
     }
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Internal server error. Please try again later.",
-        next: "https://localhost:3000/login",
+        next: "https://keepalive.club/login",
       },
       { status: 500 },
     );
