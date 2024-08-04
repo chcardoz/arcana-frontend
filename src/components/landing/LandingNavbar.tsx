@@ -9,7 +9,7 @@ export default async function LandingNavbar() {
           keepalive
         </h1>
         <Link href="https://tally.so/r/w4LQld">
-          <Button variant="secondary">Join Waitlist</Button>
+          <Button variant="secondary">Get Matched</Button>
         </Link>
       </div>
     </header>
