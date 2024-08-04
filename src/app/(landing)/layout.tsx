@@ -13,12 +13,14 @@ export default function LandingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <body className="dark:t0-gray-900 bg-gradient-to-b from-white to-red-100 dark:from-black dark:to-gray-900">
-      <div className="flex min-h-[100dvh] flex-col ">
-        <LandingNavbar />
-        <main className="mx-8 flex flex-col">{children}</main>
-        <LandingFooter />
-      </div>
-    </body>
+    <html lang="en">
+      <body className="bg-gradient-to-b from-white to-red-100 dark:from-black dark:to-gray-700">
+        <div className="flex min-h-[100dvh] flex-col ">
+          <LandingNavbar />
+          <main className="flex flex-col md:mx-8">{children}</main>
+          <LandingFooter />
+        </div>
+      </body>
+    </html>
   );
 }

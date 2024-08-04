@@ -1,83 +1,103 @@
 "use client";
+import React, { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
-import { MoveDown } from "lucide-react";
+import { Camera, Brush, User, Music, Divide, Code, Book } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+
+const occupations = [
+  {
+    name: "video editors",
+    icon: <Camera className="h-16 w-16" />,
+  },
+  {
+    name: "anime artists",
+    icon: <Brush className="h-16 w-16" />,
+  },
+  {
+    name: "college students",
+    icon: <User className="h-16 w-16" />,
+  },
+  {
+    name: "developers",
+    icon: <Code className="h-16 w-16" />,
+  },
+  {
+    name: "online learners",
+    icon: <Book className="h-16 w-16" />,
+  },
+];
 
 export default function LandingPage() {
+  const [currentOccupation, setCurrentOccupation] = useState(occupations[0]);
+
+  const shuffle = useCallback(() => {
+    const index = Math.floor(Math.random() * occupations.length);
+    setCurrentOccupation(occupations[index]);
+  }, []);
+
+  useEffect(() => {
+    const intervalID = setInterval(shuffle, 5000);
+    return () => clearInterval(intervalID);
+  }, [shuffle]);
+
   const variants = {
     hidden: {
       opacity: 0,
-      transition: {
-        when: "afterChildren",
-      },
+      x: 20,
     },
     visible: {
       opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.2,
-        delay: 0.1,
-      },
-    },
-  };
-
-  const variants2 = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
+      x: 0,
       transition: {
         ease: "easeInOut",
       },
     },
   };
+
   return (
     <>
-      <div className="mx-auto flex min-h-[calc(100dvh)] flex-row items-center justify-around">
+      <div className="mt-28 flex min-h-[calc(95dvh)] flex-col items-center gap-2">
         <motion.div
+          initial={false}
           variants={variants}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col items-center justify-center md:w-2/3"
+          className="mx-4 dark:text-gray-100"
         >
-          <motion.h1
-            variants={variants2}
-            className="text-center font-title text-5xl font-bold sm:text-6xl md:min-w-[75%] lg:text-7xl dark:text-gray-300"
-          >
-            Learn faster
+          {currentOccupation?.icon}
+        </motion.div>
+        <motion.div className="flex w-full flex-col items-center p-6">
+          <motion.h1 className="text-center font-title text-5xl font-bold sm:text-6xl md:min-w-[75%] lg:text-7xl dark:text-gray-300">
+            Peer coaching for
           </motion.h1>
           <motion.h1
-            variants={variants2}
-            className="text-center font-title text-5xl font-bold sm:text-6xl lg:text-7xl dark:text-gray-300"
+            key={currentOccupation?.name}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ ease: "easeInOut" }}
+            className="overflow-ellipsis text-center font-title text-5xl font-bold sm:text-6xl lg:text-7xl dark:text-gray-300"
           >
-            on the internet
+            {currentOccupation?.name}
           </motion.h1>
           <motion.p
-            variants={variants2}
-            className="mt-4 text-center text-lg md:w-[60%] dark:text-gray-400"
+            variants={variants}
+            className="mt-4 text-center text-lg sm:max-w-[60%] lg:max-w-[50%] dark:text-gray-400"
           >
-            Our browser exntesion helps you retain information faster by asking
-            you questions about the content you are viewing. You can also save
-            text snippets for later use.
+            Getting even <span className="font-bold">15 minutes</span> with a
+            peer in your field can save you days of uncertainty and frustration
+            when trying to learn something new.
           </motion.p>
-          <motion.button
-            variants={variants2}
-            className="mt-4 rounded-md bg-red-300 p-2 text-lg text-black dark:bg-slate-600 dark:text-white"
+          <motion.p
+            variants={variants}
+            className="mt-4 text-center text-lg sm:max-w-[50%] lg:max-w-[40%] dark:text-gray-400"
           >
-            Download Extension
-          </motion.button>
-          <motion.div
-            variants={variants2}
-            className="absolute bottom-0 flex flex-grow flex-col items-center justify-around gap-2 p-2"
-          >
-            <p className="text-center text-sm dark:text-gray-400">
-              Check out how it works below
-            </p>
-            <MoveDown className="h-5 w-5 animate-bounce dark:text-gray-200" />
-          </motion.div>
+            We provide on demand matching based on your interests and expertise
+            level
+          </motion.p>
         </motion.div>
+        <Link href="https://tally.so/r/w4LQld">
+          <Button variant="outline">Join Waitlist</Button>
+        </Link>
       </div>
     </>
   );

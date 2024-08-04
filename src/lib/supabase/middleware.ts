@@ -65,5 +65,6 @@ export const updateSession = async (request: NextRequest) => {
     return supabaseResponse;
   }
 
+  console.log(new URL("/login", request.url));
   return NextResponse.redirect(new URL("/login", request.url), 308);
 };

@@ -31,7 +31,9 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} ${rhodium_libre.variable} ${kanit.variable}`}
     >
-      <body>{children}</body>
+      <body className="bg-gradient-to-b from-white to-red-100 dark:bg-black dark:from-black dark:to-gray-700">
+        {children}
+      </body>
     </html>
   );
 }
